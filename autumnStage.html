@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Autumn</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden;
+      height: 100vh;
+      background: black;
+    }
+    canvas {
+      display: block;
+      image-rendering: pixelated;
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
+  <script>
+    let bg;
+    let cols, rows, totalBlocks;
+    let revealedBlocks = [];
+    
+    let revealSpeed = 100; // blocks revealed per frame (faster!)
+    let pixelSize = 32; // starting big pixel size for reveal
+    
+    let revealComplete = false;
+    let unpixelateSpeed = 5; // how much pixelSize shrinks per frame
+    
+    function preload() {
+      bg = loadImage('assets/autumnbg.jpg');
+    }
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      noStroke();
+      imageMode(CORNER);
+
+      initGrid();
+      frameRate(60);
+    }
+
+    function initGrid() {
+      cols = ceil(width / pixelSize);
+      rows = ceil(height / pixelSize);
+      totalBlocks = cols * rows;
+
+      revealedBlocks = [];
+      for (let i = 0; i < totalBlocks; i++) {
+        revealedBlocks[i] = false;
+      }
+
+      revealComplete = false;
+    }
+
+    function draw() {
+      background(0);
+
+      if (!revealComplete) {
+        // Reveal blocks randomly fast
+        let toReveal = revealSpeed;
+        while (toReveal > 0) {
+          let index = floor(random(totalBlocks));
+          if (!revealedBlocks[index]) {
+            revealedBlocks[index] = true;
+            toReveal--;
+          } else {
+            toReveal--;
+          }
+        }
+
+        // Check if all revealed
+        revealComplete = revealedBlocks.every(v => v === true);
+      } else {
+        // Unpixelate by shrinking pixelSize down to 1
+        if (pixelSize > 1) {
+          pixelSize -= unpixelateSpeed;
+          if (pixelSize < 1) pixelSize = 1;
+          // Update cols, rows, totalBlocks for new pixelSize
+          cols = ceil(width / pixelSize);
+          rows = ceil(height / pixelSize);
+          totalBlocks = cols * rows;
+        }
+      }
+
+      // Draw image blocks based on current pixelSize and revealed state
+      for (let i = 0; i < totalBlocks; i++) {
+        // During unpixelate, show all blocks
+        if (revealComplete || revealedBlocks[i]) {
+          let x = (i % cols) * pixelSize;
+          let y = floor(i / cols) * pixelSize;
+
+          let sx = x * (bg.width / width);
+          let sy = y * (bg.height / height);
+
+          let c = bg.get(floor(sx), floor(sy));
+          fill(c);
+          rect(x, y, pixelSize, pixelSize);
+        }
+      }
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+      initGrid();
+    }
+  </script>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Autumn Stage</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+    }
+    #skatingGif, #oopsImg, #ouchPopImg {
+      position: absolute;
+      display: none;
+      image-rendering: pixelated;
+      pointer-events: none; /* so clicks pass through */
+    }
+    #skatingGif {
+      width: 400px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    #oopsImg {
+      width: 100px;
+    }
+    #ouchPopImg {
+      width: 120px;
+    }
+  </style>
+</head>
+</body>
+</html>

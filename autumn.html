@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PHASE ONE</title>
+  <style>
+    html, body {
+      margin: 0; padding: 0; overflow: hidden;
+      background: black;
+      display: flex; justify-content: center; align-items: center;
+      height: 100vh;
+      cursor: pointer; /* show pointer to hint clickable */
+    }
+    canvas {
+      image-rendering: pixelated; /* pixelated scaling */
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
+  <script>
+    let img;
+    let alphaVal = 0;
+    let fadeSpeed = 3;
+    let fadedIn = false;
+
+    function preload() {
+      img = loadImage('assets/autumntl.jpg');
+    }
+
+    function setup() {
+      createCanvas(windowWidth, windowHeight);
+      imageMode(CENTER);
+      noStroke();
+    }
+
+    function draw() {
+      background(0);
+      if (!fadedIn) {
+        alphaVal += fadeSpeed;
+        if (alphaVal >= 255) {
+          alphaVal = 255;
+          fadedIn = true;
+        }
+      }
+      tint(255, alphaVal);
+      image(img, width / 2, height / 2, width, height);
+    }
+
+    function mousePressed() {
+      if (fadedIn) {
+        window.location.href = 'autumnStage.html'; // go to autumn stage on click AFTER fade in
+      }
+    }
+
+    function windowResized() {
+      resizeCanvas(windowWidth, windowHeight);
+    }
+  </script>
+</body>
+</html>
+
+
